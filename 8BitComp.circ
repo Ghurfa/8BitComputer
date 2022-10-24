@@ -274,6 +274,11 @@
       <a name="fanout" val="8"/>
       <a name="incoming" val="8"/>
     </comp>
+    <comp lib="0" loc="(160,330)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="nCLOCK"/>
+      <a name="labelfont" val="SansSerif bold 11"/>
+    </comp>
     <comp lib="0" loc="(1640,650)" name="Splitter">
       <a name="appear" val="right"/>
       <a name="facing" val="west"/>
@@ -359,7 +364,6 @@
       <a name="label" val="nCLOCK"/>
       <a name="labelfont" val="SansSerif bold 11"/>
     </comp>
-    <comp lib="0" loc="(190,150)" name="Clock"/>
     <comp lib="0" loc="(1910,850)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="ALU_INPUT_MOD"/>
@@ -599,11 +603,6 @@
     </comp>
     <comp lib="0" loc="(460,1150)" name="Clock"/>
     <comp lib="0" loc="(460,130)" name="Clock"/>
-    <comp lib="0" loc="(460,210)" name="Tunnel">
-      <a name="facing" val="east"/>
-      <a name="label" val="INST_NOT_DONE"/>
-      <a name="labelfont" val="SansSerif bold 11"/>
-    </comp>
     <comp lib="0" loc="(480,1190)" name="Pin">
       <a name="appearance" val="NewPins"/>
     </comp>
@@ -718,6 +717,9 @@
       <a name="facing" val="west"/>
       <a name="width" val="8"/>
     </comp>
+    <comp lib="1" loc="(170,210)" name="NOT Gate">
+      <a name="size" val="20"/>
+    </comp>
     <comp lib="1" loc="(1860,270)" name="NOT Gate"/>
     <comp lib="1" loc="(1860,510)" name="NOT Gate"/>
     <comp lib="1" loc="(1870,280)" name="Controlled Buffer">
@@ -774,9 +776,6 @@
     <comp lib="1" loc="(220,1060)" name="NOT Gate">
       <a name="size" val="20"/>
     </comp>
-    <comp lib="1" loc="(230,160)" name="NOR Gate">
-      <a name="size" val="30"/>
-    </comp>
     <comp lib="1" loc="(2350,720)" name="NAND Gate">
       <a name="width" val="8"/>
     </comp>
@@ -815,9 +814,6 @@
     <comp lib="1" loc="(2870,520)" name="Controlled Buffer">
       <a name="facing" val="south"/>
       <a name="width" val="8"/>
-    </comp>
-    <comp lib="1" loc="(480,210)" name="NOT Gate">
-      <a name="size" val="20"/>
     </comp>
     <comp lib="2" loc="(1060,730)" name="Decoder">
       <a name="select" val="3"/>
@@ -916,8 +912,8 @@
     <comp loc="(700,110)" name="ProgramCounter"/>
     <comp loc="(700,1110)" name="RAMThing"/>
     <comp loc="(810,330)" name="ProgramROM"/>
-    <wire from="(100,170)" to="(100,610)"/>
-    <wire from="(100,170)" to="(190,170)"/>
+    <wire from="(100,210)" to="(100,610)"/>
+    <wire from="(100,210)" to="(150,210)"/>
     <wire from="(100,610)" to="(120,610)"/>
     <wire from="(100,630)" to="(100,960)"/>
     <wire from="(100,630)" to="(180,630)"/>
@@ -1083,6 +1079,7 @@
     <wire from="(1590,20)" to="(1590,140)"/>
     <wire from="(1590,20)" to="(1890,20)"/>
     <wire from="(160,1010)" to="(190,1010)"/>
+    <wire from="(160,330)" to="(180,330)"/>
     <wire from="(1640,650)" to="(1810,650)"/>
     <wire from="(1640,930)" to="(1660,930)"/>
     <wire from="(1650,160)" to="(1650,200)"/>
@@ -1094,6 +1091,7 @@
     <wire from="(1690,230)" to="(1700,230)"/>
     <wire from="(170,1040)" to="(200,1040)"/>
     <wire from="(170,1060)" to="(200,1060)"/>
+    <wire from="(170,210)" to="(480,210)"/>
     <wire from="(1810,1120)" to="(1810,1210)"/>
     <wire from="(1810,1120)" to="(2120,1120)"/>
     <wire from="(1810,1210)" to="(2070,1210)"/>
@@ -1209,7 +1207,6 @@
     <wire from="(2280,700)" to="(2290,700)"/>
     <wire from="(2280,740)" to="(2280,780)"/>
     <wire from="(2280,740)" to="(2290,740)"/>
-    <wire from="(230,160)" to="(250,160)"/>
     <wire from="(2330,270)" to="(2330,310)"/>
     <wire from="(2330,310)" to="(3240,310)"/>
     <wire from="(2330,510)" to="(2330,550)"/>
@@ -1233,7 +1230,6 @@
     <wire from="(2400,70)" to="(3250,70)"/>
     <wire from="(2490,720)" to="(2490,820)"/>
     <wire from="(2490,820)" to="(2510,820)"/>
-    <wire from="(250,160)" to="(250,240)"/>
     <wire from="(2530,870)" to="(2530,910)"/>
     <wire from="(2550,830)" to="(2760,830)"/>
     <wire from="(2580,270)" to="(2580,300)"/>
@@ -1351,9 +1347,6 @@
     <wire from="(740,180)" to="(1490,180)"/>
     <wire from="(740,190)" to="(1480,190)"/>
     <wire from="(750,610)" to="(910,610)"/>
-    <wire from="(80,240)" to="(250,240)"/>
-    <wire from="(80,240)" to="(80,330)"/>
-    <wire from="(80,330)" to="(180,330)"/>
     <wire from="(810,330)" to="(850,330)"/>
     <wire from="(810,350)" to="(810,520)"/>
     <wire from="(850,330)" to="(1070,330)"/>
