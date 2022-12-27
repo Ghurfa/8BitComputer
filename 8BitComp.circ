@@ -665,27 +665,17 @@
       <a name="labelfont" val="SansSerif bold 11"/>
     </comp>
     <comp lib="0" loc="(920,680)" name="Splitter">
-      <a name="bit3" val="2"/>
-      <a name="bit4" val="2"/>
-      <a name="bit5" val="3"/>
-      <a name="bit6" val="4"/>
-      <a name="bit7" val="5"/>
-      <a name="fanout" val="6"/>
+      <a name="fanout" val="8"/>
       <a name="incoming" val="8"/>
       <a name="spacing" val="2"/>
     </comp>
-    <comp lib="0" loc="(940,570)" name="Tunnel">
+    <comp lib="0" loc="(940,590)" name="Tunnel">
       <a name="label" val="ALU_INVERT_OUT"/>
       <a name="labelfont" val="SansSerif bold 11"/>
     </comp>
-    <comp lib="0" loc="(940,590)" name="Tunnel">
+    <comp lib="0" loc="(940,610)" name="Tunnel">
       <a name="label" val="ALU_INPUT_MOD"/>
       <a name="labelfont" val="SansSerif bold 11"/>
-    </comp>
-    <comp lib="0" loc="(940,610)" name="Tunnel">
-      <a name="label" val="ALU_SELECT"/>
-      <a name="labelfont" val="SansSerif bold 11"/>
-      <a name="width" val="3"/>
     </comp>
     <comp lib="0" loc="(940,630)" name="Tunnel">
       <a name="label" val="nALU_B_SEL_SYS"/>
@@ -698,6 +688,18 @@
     <comp lib="0" loc="(940,670)" name="Tunnel">
       <a name="label" val="INST_NOT_DONE"/>
       <a name="labelfont" val="SansSerif bold 11"/>
+    </comp>
+    <comp lib="0" loc="(960,550)" name="Splitter">
+      <a name="appear" val="center"/>
+      <a name="facing" val="west"/>
+      <a name="fanout" val="3"/>
+      <a name="incoming" val="3"/>
+      <a name="spacing" val="2"/>
+    </comp>
+    <comp lib="0" loc="(960,550)" name="Tunnel">
+      <a name="label" val="ALU_SELECT"/>
+      <a name="labelfont" val="SansSerif bold 11"/>
+      <a name="width" val="3"/>
     </comp>
     <comp lib="0" loc="(980,1020)" name="Splitter">
       <a name="bit1" val="0"/>
@@ -2470,9 +2472,9 @@
       <a name="addrWidth" val="11"/>
       <a name="appearance" val="logisim_evolution"/>
       <a name="contents">addr/data: 11 8
-7*80 0 8*80 60 175*ff 19 15*ff 18
-559*ff 7a 15*ff 7a 15*ff 7a 15*ff 7a
-143*ff 7a 63*ff 9c 40 30*ff 40 991*ff
+7*80 0 8*80 60 175*ff e 15*ff 6
+559*ff 76 15*ff 76 15*ff 76 15*ff 76
+143*ff 76 63*ff 87 40 30*ff 40 991*ff
 </a>
     </comp>
     <wire from="(180,210)" to="(370,210)"/>
