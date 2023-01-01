@@ -1,0 +1,78 @@
+# r0 = operating register
+# r1 = adjacency bits
+# r2 = neighbor index
+# r3 = stack pointer
+# r4 = address register
+
+input r1 # start node
+input r2 # end node
+store2 0xA0
+
+# light up start LED
+set0 0x07
+lseq r0 
+
+# set up graph
+pushv 0b00000000 # node 0 low
+pushv 0b00000000 # node 0 high
+
+# set up operating stack
+push r1
+
+# main DFS loop
+jump main_cond
+main_start:
+
+peek r1 # current node
+
+# if current is end, break out of loop
+load0 0xA0
+eq r0 r1 r0
+jif main_end
+
+# load high adjacency bits
+shl r1 r1
+addro1 0x01
+loadi r1
+
+# check high neighbors
+set2 0x0F
+jump high_edges_cond
+high_edges_start:
+
+# get current bit
+mov r0 r1
+shl r1 r1
+
+# if edge exists, check if neighbor is already visited
+jifn high_edges_iter
+addro2 0x40
+loadi r0
+
+# if not visited, push onto stack
+jif high_edges_iter
+setmemi 0xFF
+push r2
+# todo: turn on neighbor LED
+jump main_cond # could just go to main_start but that feels like bad practice
+
+high_edges_iter:
+incr2 0xFF
+high_edges_cond:
+set0 0x07
+gr r0 r2 r0
+jif high_edges_start
+
+# todo: repeat for low edges (copy-paste & some edits)
+
+pop r0
+# todo: turn off current LED
+
+main_cond:
+set0 0x20
+gr r0 r3 r0
+jif main_start
+
+main_end:
+
+# todo: display result (stack stores path)
