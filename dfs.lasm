@@ -1,78 +1,185 @@
-# r0 = operating register
-# r1 = adjacency bits
-# r2 = neighbor index
+# r0-2 = operating registers
 # r3 = stack pointer
 # r4 = address register
 
-input r1 # start node
-input r2 # end node
-store2 0xA0
+# global vars:
+# 0x80 = start node
+# 0x81 = end node
+# 0x82 = low LED output state
+# 0x83 = high LED output state
+# 0x90-0x9F = visited states
 
-# light up start LED
-set0 0x07
-lseq r0 
+# main function/entrypoint (7 instructions + 32 graph set up)
+
+input r0 # start node
+store0 0x80
+input r1 # end node
+store1 0x81
 
 # set up graph
 pushv 0b00000000 # node 0 low
 pushv 0b00000000 # node 0 high
 
-# set up operating stack
-push r1
+# run dfs
+load0 0x80 # start node
+call dfs
 
-# main DFS loop
-jump main_cond
-main_start:
+halt
 
-peek r1 # current node
+# ---------------------------------------------------------------------------------------------------------------------
 
-# if current is end, break out of loop
-load0 0xA0
-eq r0 r1 r0
-jif main_end
+# Recursive depth-first search. Also handles all LED lighting. Returns whether end was found
+# 43 instructions
+#
+# bool (byte nodeIdx)
+# [r3 - 1] = currBits
+# [r3 - 2] = currNeighborIdx
+# [r3 - 3] = currNodeIdx
+dfs:
 
-# load high adjacency bits
+# save arguments
+push r0
+pushv 0x00
+pushv 0x00
+
+# light up current LED
+set1 0xFF
+call update_led
+
+# store current into r1 and mark current as visited
+lloc1 -3
+addro1 0x90
+storeiv 0xFF
+
+# if current is end, return true
+load0 0x81
+eq r0 r0 r1
+jifn not_end
+ret 3
+not_end:
+
+# load high adjacency bits into r1
 shl r1 r1
 addro1 0x01
 loadi r1
 
-# check high neighbors
+# check neighbors loop
 set2 0x0F
-jump high_edges_cond
-high_edges_start:
+jmp neighbor_loop_cond
+neighbor_loop:
 
 # get current bit
 mov r0 r1
 shl r1 r1
 
 # if edge exists, check if neighbor is already visited
-jifn high_edges_iter
-addro2 0x40
-loadi r0
+jifn neighbor_loop_iter
+addro2 0x90
+loadi r0                    # isNeighborVisited
 
-# if not visited, push onto stack
-jif high_edges_iter
-setmemi 0xFF
-push r2
-# todo: turn on neighbor LED
-jump main_cond # could just go to main_start but that feels like bad practice
+# if not visited, visit (recursively)
+not r0 r0
+jifn neighbor_loop_iter
 
-high_edges_iter:
-incr2 0xFF
-high_edges_cond:
+# save local vars
+sloc1 -1
+sloc2 -2
+
+# recurse
+mov r0 r2
+call dfs
+
+# if found end through neighbor, return
+jifn neighbor_loop_iter
+ret 3
+
+neighbor_loop_iter:
+incr2 -1
+
+# check if done with high  bits
+set0 0x07
+eq r0 r2 r0
+jifn neighbor_loop_cond
+
+# if so, load low bits into r1
+lloc1 -3                # current
+shl r4 r1
+loadi r1                # current low adjacency
+
+neighbor_loop_cond: # loop while neighbor >= 0 
+neqff r2
+jif neighbor_loop
+
+# turn off LED and return
+lloc0 -3
+set1 0x00
+call update_led
+ret 3
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+# void (r0=nodeIndex, r1=on)
+# [r3 - 1] = isHighIndex
+# [r3 - 2] = nodeIndex
+# [r3 - 3] = on
+# 33 instructions
+update_led:
+
+# save arguments
+push r1
+push r0
+
+# check if node is a high index
+mov r2 r0
 set0 0x07
 gr r0 r2 r0
-jif high_edges_start
+push r0 # isHighIndex
 
-# todo: repeat for low edges (copy-paste & some edits)
+# convert node index to sub-byte index
+jifn sub_byte_idx_else
+incr2 -8
+sub_byte_idx_else:
 
-pop r0
-# todo: turn off current LED
+# build mask & store into r1
+set1 0x01
+jmp build_mask_cond
+build_mask_loop:
+shl r1 r1
+incr2 -1
+build_mask_cond:
+eq0 r0 r2
+jifn build_mask_loop
 
-main_cond:
-set0 0x20
-gr r0 r3 r0
-jif main_start
+# get current state & store in r2
+lloc0 -1                    # isHighIndex
+jifn get_curr_state_else
+load2 0x83                  # high bits
+jmp get_curr_state_end
+get_curr_state_else:
+load2 0x82                  # low bits
+get_curr_state_end:
 
-main_end:
+# make new state & store into r2
+lloc0 -3                    # isOn
+jifn make_new_state_else
+or r2 r1 r2                 # on
+jmp make_new_state_end
+make_new_state_else:
+not r1 r1                   # off
+and r2 r1 r2
+make_new_state_end:
 
-# todo: display result (stack stores path)
+# save new state into RAM & store into appropriate output register
+lloc0 -1                    # isHighIndex
+jifn save_state_else
+store2 0x83                 # high bits
+outputa r2
+jmp save_state_end
+save_state_else:
+store2 0x82                 # low bits
+outputb r2
+save_state_end:
+
+# clean up stack
+ret 3
