@@ -59,18 +59,18 @@ ret 3
 not_end:
 
 # load high adjacency bits into r1
-shl r1 r1
-addro1 0x01
+add r1 r1 r1
+addro1 0x01 # double, add 1
 loadi r1
 
 # check neighbors loop
 set2 0x0F
-jmp neighbor_loop_cond
+jump neighbor_loop_cond
 neighbor_loop:
 
 # get current bit
 mov r0 r1
-shl r1 r1
+add r1 r1 r1 # shift left
 
 # if edge exists, check if neighbor is already visited
 jifn neighbor_loop_iter
@@ -103,12 +103,12 @@ jifn neighbor_loop_cond
 
 # if so, load low bits into r1
 lloc1 -3                # current
-shl r4 r1
+add r4 r1 r1
 loadi r1                # current low adjacency
 
 neighbor_loop_cond: # loop while neighbor >= 0 
-neqff r2
-jif neighbor_loop
+eqff r0 r2
+jifn neighbor_loop
 
 # turn off LED and return
 lloc0 -3
@@ -143,19 +143,19 @@ sub_byte_idx_else:
 
 # build mask & store into r1
 set1 0x01
-jmp build_mask_cond
+jump build_mask_cond
 build_mask_loop:
-shl r1 r1
+add r1 r1 r1
 incr2 -1
 build_mask_cond:
-eq0 r0 r2
+eq00 r0 r2
 jifn build_mask_loop
 
 # get current state & store in r2
 lloc0 -1                    # isHighIndex
 jifn get_curr_state_else
 load2 0x83                  # high bits
-jmp get_curr_state_end
+jump get_curr_state_end
 get_curr_state_else:
 load2 0x82                  # low bits
 get_curr_state_end:
@@ -164,7 +164,7 @@ get_curr_state_end:
 lloc0 -3                    # isOn
 jifn make_new_state_else
 or r2 r1 r2                 # on
-jmp make_new_state_end
+jump make_new_state_end
 make_new_state_else:
 not r1 r1                   # off
 and r2 r1 r2
@@ -175,7 +175,7 @@ lloc0 -1                    # isHighIndex
 jifn save_state_else
 store2 0x83                 # high bits
 outputa r2
-jmp save_state_end
+jump save_state_end
 save_state_else:
 store2 0x82                 # low bits
 outputb r2

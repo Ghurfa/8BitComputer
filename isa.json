@@ -1,0 +1,1067 @@
+{
+    "instructionNumbering": {
+        "nop": "0x00",
+        "mov": "0x01",
+        "set0": "0x02",
+        "set1": "0x03",
+        "set2": "0x04",
+        "set3": "0x05",
+        "set4": "0x06",
+        "incr0": "0x07",
+        "incr1": "0x08",
+        "incr2": "0x09",
+        "incr3": "0x0A",
+        "store0": "0x10",
+        "store1": "0x11",
+        "store2": "0x12",
+        "store3": "0x13",
+        "load0": "0x14",
+        "load1": "0x15",
+        "load2": "0x16",
+        "load3": "0x17",
+        "storei": "0x18",
+        "storeiv": "0x19",
+        "loadi": "0x1A",
+        "lloc0": "0x20",
+        "lloc1": "0x21",
+        "lloc2": "0x22",
+        "sloc0": "0x24",
+        "sloc1": "0x25",
+        "sloc2": "0x26",
+        "addro0": "0x28",
+        "addro1": "0x29",
+        "addro2": "0x2A",
+        "pushv": "0x30",
+        "push": "0x31",
+        "eq": "0x40",
+        "eq00": "0x41",
+        "eqff": "0x42",
+        "neq": "0x44",
+        "neq00": "0x45",
+        "neqff": "0x46",
+        "gr": "0x48",
+        "greq": "0x49",
+        "ls": "0x4A",
+        "lseq": "0x4B",
+        "add": "0x50",
+        "sub": "0x51",
+        "sub2": "0x52",
+        "shr": "0x54",
+        "not": "0x55",
+        "and": "0x56",
+        "or": "0x57",
+        "nand": "0x58",
+        "nor": "0x59",
+        "xor": "0x5A",
+        "xnor": "0x5B",
+        "jump": "0x60",
+        "jifn": "0x61",
+        "call": "0x62",
+        "ret": "0x63",
+        "input": "0x70",
+        "outputa": "0x71",
+        "outputb": "0x72",
+        "halt": "0xFF"
+    },
+    "readIndices": {
+        "r0": 0,
+        "r1": 1,
+        "r2": 2,
+        "r3": 3,
+        "r4": 4,
+        "rx": 7,
+        "none": 8,
+        "data": 9,
+        "pc": 10,
+        "ram": 11,
+        "user": 12
+    },
+    "writeIndices": {
+        "r0": 0,
+        "r1": 1,
+        "r2": 2,
+        "r3": 3,
+        "r4": 4,
+        "rx": 7,
+        "none": 8,
+        "jumpInst": 10,
+        "ram": 11,
+        "outputa": 13,
+        "outputb": 14
+    },
+    "aluOperations": {
+        "a+b": "00000",
+        "a-b": "00001",
+        "a-b-1":"00010",
+        "b-a": "00011",
+        "<=": "00100",
+        ">": "00101",
+        ">=": "00110",
+        "<": "00111",
+        "!=": "01000",
+        "==": "01001",
+        "nand": "01100",
+        "and": "01101",
+        "or": "01110",
+        "nor": "01111",
+        "!=ff": "10000",
+        "==ff": "10001",
+        "!=00": "10010",
+        "==00": "10011",
+        "a-1": "11000",
+        "a+1": "11001",
+        "a": "11010",
+        "~a": "11011",
+        "xor": "11100",
+        "xnor": "11101",
+        ">>": "11110"
+    },
+    "instructions": [
+        {
+            "name": "mov",
+            "parseType": "destSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "set0",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r0",
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "set1",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r1",
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "set2",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r2",
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "set3",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r3",
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "incr0",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "r0",
+                    "write": "r0",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "b-a"
+                },
+                {
+                    "read": "r0",
+                    "write": "r0",
+                    "r4B": true,
+                    "aluOp": "a-b"
+                }
+            ]
+        },
+        {
+            "name": "incr1",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "r1",
+                    "write": "r1",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "b-a"
+                },
+                {
+                    "read": "r1",
+                    "write": "r1",
+                    "r4B": true,
+                    "aluOp": "a-b"
+                }
+            ]
+        },
+        {
+            "name": "incr2",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "r2",
+                    "write": "r2",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "b-a"
+                },
+                {
+                    "read": "r2",
+                    "write": "r2",
+                    "r4B": true,
+                    "aluOp": "a-b"
+                }
+            ]
+        },
+        {
+            "name": "incr3",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "r3",
+                    "write": "r3",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "b-a"
+                },
+                {
+                    "read": "r3",
+                    "write": "r3",
+                    "r4B": true,
+                    "aluOp": "a-b"
+                }
+            ]
+        },
+        {
+            "name": "store0",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "r0",
+                    "write": "ram",
+                    "ramAddrFromData": true,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "store1",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "r1",
+                    "write": "ram",
+                    "ramAddrFromData": true,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "store2",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "r2",
+                    "write": "ram",
+                    "ramAddrFromData": true,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "store3",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "r3",
+                    "write": "ram",
+                    "ramAddrFromData": true,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "load0",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "ram",
+                    "write": "r0",
+                    "ramAddrFromData": true,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "load1",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "ram",
+                    "write": "r1",
+                    "ramAddrFromData": true,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "load2",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "ram",
+                    "write": "r2",
+                    "ramAddrFromData": true,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "load3",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "ram",
+                    "write": "r3",
+                    "ramAddrFromData": true,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "storei",
+            "parseType": "src",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                }
+            ]
+        },
+        {
+            "name": "storeiv",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                }
+            ]
+        },
+        {
+            "name": "loadi",
+            "parseType": "dest",
+            "microcode": [
+                {
+                    "read": "ram",
+                    "write": "rx",
+                    "ramAddrFromData": false,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "lloc0",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "ram",
+                    "write": "r0",
+                    "ramAddrFromData": false,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "lloc1",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "ram",
+                    "write": "r1",
+                    "ramAddrFromData": false,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "lloc2",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "ram",
+                    "write": "r2",
+                    "ramAddrFromData": false,
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "sloc0",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "r0",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                }
+            ]
+        },
+        {
+            "name": "sloc1",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "r1",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                }
+            ]
+        },
+        {
+            "name": "sloc2",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                },
+                {
+                    "read": "r2",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                }
+            ]
+        },
+        {
+            "name": "addro0",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r0",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                }
+            ]
+        },
+        {
+            "name": "addro1",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r1",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                }
+            ]
+        },
+        {
+            "name": "addro2",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r2",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
+                }
+            ]
+        },
+        {
+            "name": "pushv",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "data",  
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r3",
+                    "write": "r3",
+                    "aluOp": "a+1"
+                }
+            ]
+        },
+        {
+            "name": "push",
+            "parseType": "src",
+            "microcode": [
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r3",
+                    "write": "r3",
+                    "aluOp": "a+1"
+                }
+            ]
+        },
+        {
+            "name": "eq",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "=="
+                }
+            ]
+        },
+        {
+            "name": "eq00",
+            "parseType": "destSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": "==00"
+                }
+            ]
+        },
+        {
+            "name": "eqff",
+            "parseType": "destSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": "==ff"
+                }
+            ]
+        },
+        {
+            "name": "neq",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "!="
+                }
+            ]
+        },
+        {
+            "name": "neq00",
+            "parseType": "destSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": "!=00"
+                }
+            ]
+        },
+        {
+            "name": "neqff",
+            "parseType": "destSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": "!=ff"
+                }
+            ]
+        },
+        {
+            "name": "gr",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": ">"
+                }
+            ]
+        },
+        {
+            "name": "greq",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": ">="
+                }
+            ]
+        },
+        {
+            "name": "ls",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "<"
+                }
+            ]
+        },
+        {
+            "name": "lseq",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "<="
+                }
+            ]
+        },
+        {
+            "name": "add",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "a+b"
+                }
+            ]
+        },
+        {
+            "name": "shr",
+            "parseType": "destSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": ">>"
+                }
+            ]
+        },
+        {
+            "name": "not",
+            "parseType": "destSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": "~a"
+                }
+            ]
+        },
+        {
+            "name": "and",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "and"
+                }
+            ]
+        },
+        {
+            "name": "or",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "or"
+                }
+            ]
+        },
+        {
+            "name": "nand",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "nor"
+                }
+            ]
+        },
+        {
+            "name": "nor",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "nor"
+                }
+            ]
+        },
+        {
+            "name": "xor",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "xor"
+                }
+            ]
+        },
+        {
+            "name": "xnor",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "xnor"
+                }
+            ]
+        },
+        {
+            "name": "jump",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "r4",
+                    "write": "none",
+                    "r4B": true,
+                    "aluOp": "xor"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "jifn",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "call",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "pc",
+                    "write": "r3",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "r3",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r4",
+                    "write": "none",
+                    "r4B": true,
+                    "aluOp": "xor"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "ret",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r3",
+                    "write": "r3",
+                    "r4B": true,
+                    "aluOp": "a-b-1"
+                },
+                {
+                    "read": "r3",
+                    "write": "r4",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "r4",
+                    "write": "none",
+                    "r4B": true,
+                    "aluOp": "xor"
+                },
+                {
+                    "read": "ram",
+                    "write": "jumpInst",
+                    "ramAddrFromData": false
+                }
+            ]
+        },
+        {
+            "name": "input",
+            "parseType": "dest",
+            "microcode": [
+                {
+                    "read": "user",
+                    "write": "rx",
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "outputa",
+            "parseType": "src",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "outputa"
+                }
+            ]
+        },
+        {
+            "name": "outputb",
+            "parseType": "src",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "outputb"
+                }
+            ]
+        },
+        {
+            "name": "halt",
+            "parseType": "none",
+            "microcode": [
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                }
+            ]
+        }
+    ]
+}
