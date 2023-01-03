@@ -133,42 +133,6 @@ namespace Assembler
             }
         }
 
-        static void VerifyInstructions(ISA isa)
-        {
-            HashSet<string> usedInstNums = new();
-            HashSet<string> usedInstNames = new();
-            foreach (Instruction inst in isa.Instructions)
-            {
-                if (!usedInstNames.Add(inst.Name) ||
-                    !usedInstNums.Add(isa.InstructionNumbering[inst.Name]))
-                {
-                    throw new AssemblerException();
-                }
-                foreach (MicrocodeStep mcStep in inst.Microcode)
-                {
-                    if (mcStep.ALUOp == null)
-                    {
-                        if (isa.WriteIndices[mcStep.Write] < 8)
-                        {
-                            throw new AssemblerException();
-                        }
-                    }
-                    else if (!isa.ALUOperations.ContainsKey(mcStep.ALUOp))
-                    {
-                        throw new AssemblerException();
-                    }
-
-                    if(mcStep.Read.ToLower() == "ram" || mcStep.Write.ToLower() == "ram")
-                    {
-                        if(mcStep.RAMAddrFromData == null)
-                        {
-                            throw new AssemblerException();
-                        }
-                    }
-                }
-            }
-        }
-
         static void Main(string[] args)
         {
             //Get code
@@ -186,12 +150,19 @@ namespace Assembler
             };
             ISA isa = JsonSerializer.Deserialize<ISA>(isaText, options);
 
-            VerifyInstructions(isa);
+            //Generate microcode
+            (byte[] ioMicrocode, byte[] aluMicrocode) = MicrocodeGenerator.Generate(isa);
+
+            string ioMicrocodeOutputFile = @"..\..\..\..\..\ioMicrocodeROM.bin";
+            string aluMicrocodeOutputFile = @"..\..\..\..\..\aluMicrocodeROM.bin";
+
+            File.WriteAllBytes(ioMicrocodeOutputFile, ioMicrocode);
+            File.WriteAllBytes(aluMicrocodeOutputFile, aluMicrocode);
 
             //Assemble
             (byte Opcode, byte Data)[] assembled = codeLines.Select(x => AssembleLine(x, labels, isa)).ToArray();
-            byte[] opcodeBytes = new byte[128];
-            byte[] dataBytes = new byte[128];
+            byte[] opcodeBytes = new byte[256];
+            byte[] dataBytes = new byte[256];
             assembled.Select(x => x.Opcode).ToArray().CopyTo(opcodeBytes, 0);
             assembled.Select(x => x.Data).ToArray().CopyTo(dataBytes, 0);
 

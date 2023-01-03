@@ -38,8 +38,8 @@ namespace Assembler
     public class ISA
     {
         public Dictionary<string, string> InstructionNumbering { get; set; }
-        public Dictionary<string, int> ReadIndices { get; set; }
-        public Dictionary<string, int> WriteIndices { get; set; }
+        public Dictionary<string, byte> ReadIndices { get; set; }
+        public Dictionary<string, byte> WriteIndices { get; set; }
         public Dictionary<string, string> ALUOperations{ get; set; }
         public Instruction[] Instructions { get; set; }
 

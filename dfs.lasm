@@ -90,8 +90,13 @@ mov r0 r2
 call dfs
 
 # if found end through neighbor, return
-jifn neighbor_loop_iter
+jifn end_not_found
 ret 3
+
+end_not_found:
+# load local vars
+lloc1 -1
+lloc2 -2
 
 neighbor_loop_iter:
 incr2 -1
