@@ -17,8 +17,28 @@ input r1 # end node
 store1 0x81
 
 # set up graph
-pushv 0b00000000 # node 0 low
-pushv 0b00000000 # node 0 high
+pushv 0          # node 0 not adjacent to any low nodes
+pushv 0b00000100 # node 0 adjacent to A
+pushv 0          # node 1 not adjacent to any low nodes
+pushv 0b00000100 # node 1 adjacent to A
+pushv 0b00001000 # node 2 adjacent to 3
+pushv 0b00010000 # node 2 adjacent to C
+pushv 0b00010100 # node 3 adjacent to 2, 4
+pushv 0b00010000 # node 3 adjacent to C
+pushv 0b00001000 # node 4 adjacent to 3
+pushv 0b00010000 # node 4 adjacent to C
+set3 0x10        # nodes 5, 6, and 7 do not exist
+pushv 0          # node 8 not adjacent to any low nodes
+pushv 0b00001010 # node 8 adjacent to 9, B
+pushv 0b00000011 # node A adjacent to 0, 1
+pushv 0b00001010 # node A adjacent to 9, B
+pushv 0          # node B not adjacent to any low nodes
+pushv 0b00110101 # node B adjacent to 8, A, C, D
+pushv 0b00011100 # node C adjacent to 2, 3, 4
+pushv 0b00101000 # node C adjacent to B, D
+pushv 0          # node D not adjacent to any low nodes
+pushv 0b00011000 # node D adjacent to B, C
+set3 0x20        # nodes E and F do not exist
 
 # run dfs
 load0 0x80 # start node
@@ -138,7 +158,7 @@ push r0
 # check if node is a high index
 mov r2 r0
 set0 0x07
-gr r0 r2 r0
+gr r0 r0 r2
 push r0 # isHighIndex
 
 # convert node index to sub-byte index

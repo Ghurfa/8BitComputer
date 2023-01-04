@@ -163,6 +163,7 @@ namespace Assembler
             (byte Opcode, byte Data)[] assembled = codeLines.Select(x => AssembleLine(x, labels, isa)).ToArray();
             byte[] opcodeBytes = new byte[256];
             byte[] dataBytes = new byte[256];
+            Array.Fill<byte>(opcodeBytes, 0x7F);
             assembled.Select(x => x.Opcode).ToArray().CopyTo(opcodeBytes, 0);
             assembled.Select(x => x.Data).ToArray().CopyTo(dataBytes, 0);
 

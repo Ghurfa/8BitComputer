@@ -31,7 +31,7 @@ namespace Assembler
 
                     bool notDone = i < (inst.Microcode.Length - 1);
                     bool ramAddrFromData = step.RAMAddrFromData ?? false;
-                    bool dontOutputReg4ToBBus = step.R4B ?? false;
+                    bool dontOutputReg4ToBBus = !step.R4B ?? false;
                     byte ALUOperationBits;
                     if(step.ALUOp != null)
                     {
