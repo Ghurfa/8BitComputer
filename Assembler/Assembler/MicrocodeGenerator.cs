@@ -29,7 +29,7 @@ namespace Assembler
                     int writeIndex = isa.WriteIndices[step.Write];
                     ioMicrocode[opcodeByte * 16 + i] = (byte)(writeIndex << 4 | readIndex);
 
-                    bool notDone = i < (inst.Microcode.Length - 1);
+                    bool notDone = !step.EndOfInstruction ?? i < (inst.Microcode.Length - 1);
                     bool ramAddrFromData = step.RAMAddrFromData ?? false;
                     bool dontOutputReg4ToBBus = !step.R4B ?? false;
                     byte ALUOperationBits;

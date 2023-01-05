@@ -903,6 +903,11 @@
             "parseType": "label",
             "microcode": [
                 {
+                    "read": "r0",
+                    "write": "none",
+                    "aluOp": "a"
+                },
+                {
                     "read": "data",
                     "write": "jumpInst"
                 }
@@ -1074,7 +1079,8 @@
                 },
                 {
                     "read": "none",
-                    "write": "none"
+                    "write": "none",
+                    "endOfInstruction": false
                 }
             ]
         }

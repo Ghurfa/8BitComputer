@@ -25,6 +25,7 @@ namespace Assembler
         public string Write { get; set; }
         public bool? RAMAddrFromData { get; set; }
         public bool? R4B { get; set; }
+        public bool? EndOfInstruction { get; set; }
         public string? ALUOp { get; set; }
     }
 

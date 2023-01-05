@@ -7,6 +7,7 @@
 # 0x81 = end node
 # 0x82 = low LED output state
 # 0x83 = high LED output state
+# 0x88-0x8F = masks (e.g. 0x88 = 1 << 0, 0x89 = 1 << 1)
 # 0x90-0x9F = visited states
 
 # main function/entrypoint (7 instructions + 32 graph set up)
@@ -16,7 +17,41 @@ store0 0x80
 input r1 # end node
 store1 0x81
 
+# reset global vars
+store2 0x82
+store2 0x83
+
+# set masks
+set3 0x88
+pushv 0x01
+pushv 0x02
+pushv 0x04
+pushv 0x08
+pushv 0x10
+pushv 0x20
+pushv 0x40
+pushv 0x80
+
+# unrolled for runtime efficiency (def not bc I'm too lazy to write a loop rn)
+store2 0x90
+store2 0x91
+store2 0x92
+store2 0x93
+store2 0x94
+store2 0x95
+store2 0x96
+store2 0x97
+store2 0x98
+store2 0x99
+store2 0x9A
+store2 0x9B
+store2 0x9C
+store2 0x9D
+store2 0x9E
+store2 0x9F
+
 # set up graph
+set3 0
 pushv 0          # node 0 not adjacent to any low nodes
 pushv 0b00000100 # node 0 adjacent to A
 pushv 0          # node 1 not adjacent to any low nodes
@@ -30,6 +65,8 @@ pushv 0b00010000 # node 4 adjacent to C
 set3 0x10        # nodes 5, 6, and 7 do not exist
 pushv 0          # node 8 not adjacent to any low nodes
 pushv 0b00001010 # node 8 adjacent to 9, B
+pushv 0          # node 9 not adjacent to any low nodes
+pushv 0b00000101 # node 9 adjacent to 8, A
 pushv 0b00000011 # node A adjacent to 0, 1
 pushv 0b00001010 # node A adjacent to 9, B
 pushv 0          # node B not adjacent to any low nodes
@@ -135,10 +172,13 @@ neighbor_loop_cond: # loop while neighbor >= 0
 eqff r0 r2
 jifn neighbor_loop
 
-# turn off LED and return
+# turn off LED
 lloc0 -3
 set1 0x00
 call update_led
+
+# return false
+set0 0x00
 ret 3
 
 
@@ -162,19 +202,12 @@ gr r0 r0 r2
 push r0 # isHighIndex
 
 # convert node index to sub-byte index
-jifn sub_byte_idx_else
-incr2 -8
-sub_byte_idx_else:
+set1 0x77
+and r2 r1 r2
 
-# build mask & store into r1
-set1 0x01
-jump build_mask_cond
-build_mask_loop:
-add r1 r1 r1
-incr2 -1
-build_mask_cond:
-eq00 r0 r2
-jifn build_mask_loop
+# look up mask in table and store in r1
+addro2 0x88
+loadi r1
 
 # get current state & store in r2
 lloc0 -1                    # isHighIndex

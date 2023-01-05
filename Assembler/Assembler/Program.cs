@@ -133,6 +133,7 @@ namespace Assembler
             }
         }
 
+
         static void Main(string[] args)
         {
             //Get code
@@ -140,6 +141,16 @@ namespace Assembler
             string[] lines = File.ReadAllLines(codePath);
             GetCodeLines(lines, out List<string> codeLines, out Dictionary<string, byte> labels);
             Console.WriteLine(codeLines.Count());
+
+            //Generate stripped file
+            string strippedOutputFile = codePath.Substring(0, codePath.Length - 5) + "_stripped.slasm";
+            List<string> strippedFileLines = new(codeLines);
+            foreach (string label in labels.Keys)
+            {
+                byte index = labels[label];
+                strippedFileLines[index] = label + ": " + strippedFileLines[index];
+            }
+            File.WriteAllLines(strippedOutputFile, strippedFileLines);
 
             //Get ISA
             string isaPath = @"..\..\..\..\..\isa.json";
