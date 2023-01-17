@@ -137,13 +137,14 @@ namespace Assembler
         static void Main(string[] args)
         {
             //Get code
-            string codePath = @"..\..\..\..\..\dfs.lasm";
+            string srcFolder = @"..\..\..\..\..\DemoProgram\";
+            string codePath = srcFolder + "depthFirstSearch.lasm";
             string[] lines = File.ReadAllLines(codePath);
             GetCodeLines(lines, out List<string> codeLines, out Dictionary<string, byte> labels);
             Console.WriteLine(codeLines.Count());
 
             //Generate stripped file
-            string strippedOutputFile = codePath.Substring(0, codePath.Length - 5) + "_stripped.slasm";
+            string strippedOutputFile = codePath.Substring(0, codePath.Length - 5) + "_stripped.txt";
             List<string> strippedFileLines = new(codeLines);
             foreach (string label in labels.Keys)
             {
@@ -153,7 +154,7 @@ namespace Assembler
             File.WriteAllLines(strippedOutputFile, strippedFileLines);
 
             //Get ISA
-            string isaPath = @"..\..\..\..\..\isa.json";
+            string isaPath = srcFolder + "isa.json";
             string isaText = File.ReadAllText(isaPath);
             JsonSerializerOptions options = new()
             {
@@ -164,8 +165,8 @@ namespace Assembler
             //Generate microcode
             (byte[] ioMicrocode, byte[] aluMicrocode) = MicrocodeGenerator.Generate(isa);
 
-            string ioMicrocodeOutputFile = @"..\..\..\..\..\ioMicrocodeROM.bin";
-            string aluMicrocodeOutputFile = @"..\..\..\..\..\aluMicrocodeROM.bin";
+            string ioMicrocodeOutputFile = srcFolder + "ioMicrocodeROM.bin";
+            string aluMicrocodeOutputFile = srcFolder + "aluMicrocodeROM.bin";
 
             File.WriteAllBytes(ioMicrocodeOutputFile, ioMicrocode);
             File.WriteAllBytes(aluMicrocodeOutputFile, aluMicrocode);

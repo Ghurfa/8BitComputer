@@ -1,0 +1,134 @@
+input r0
+store0 0x80
+input r1
+store1 0x81
+store2 0x82
+store2 0x83
+set3 0x88
+pushv 0x01
+pushv 0x02
+pushv 0x04
+pushv 0x08
+pushv 0x10
+pushv 0x20
+pushv 0x40
+pushv 0x80
+store2 0x90
+store2 0x91
+store2 0x92
+store2 0x93
+store2 0x94
+store2 0x95
+store2 0x96
+store2 0x97
+store2 0x98
+store2 0x99
+store2 0x9A
+store2 0x9B
+store2 0x9C
+store2 0x9D
+store2 0x9E
+store2 0x9F
+set3 0
+pushv 0
+pushv 0b00000100
+pushv 0
+pushv 0b00000100
+pushv 0b00001000
+pushv 0b00010000
+pushv 0b00010100
+pushv 0b00010000
+pushv 0b00001000
+pushv 0b00010000
+set3 0x10
+pushv 0
+pushv 0b00001010
+pushv 0
+pushv 0b00000101
+pushv 0b00000011
+pushv 0b00001010
+pushv 0
+pushv 0b00110101
+pushv 0b00011100
+pushv 0b00101000
+pushv 0
+pushv 0b00011000
+set3 0x20
+load0 0x80
+call dfs
+halt
+dfs: push r0
+pushv 0x00
+pushv 0x00
+set1 0xFF
+call update_led
+lloc1 -3
+addro1 0x90
+storeiv 0xFF
+load0 0x81
+eq r0 r0 r1
+jifn not_end
+ret 3
+not_end: add r1 r1 r1
+addro1 0x01
+loadi r1
+set2 0x0F
+jump neighbor_loop_cond
+neighbor_loop: mov r0 r1
+add r1 r1 r1
+jifn neighbor_loop_iter
+addro2 0x90
+loadi r0
+not r0 r0
+jifn neighbor_loop_iter
+sloc1 -1
+sloc2 -2
+mov r0 r2
+call dfs
+jifn end_not_found
+ret 3
+end_not_found: lloc1 -1
+lloc2 -2
+neighbor_loop_iter: incr2 -1
+set0 0x07
+eq r0 r2 r0
+jifn neighbor_loop_cond
+lloc1 -3
+add r4 r1 r1
+loadi r1
+neighbor_loop_cond: eqff r0 r2
+jifn neighbor_loop
+lloc0 -3
+set1 0x00
+call update_led
+set0 0x00
+ret 3
+update_led: push r1
+push r0
+mov r2 r0
+set0 0x07
+gr r0 r0 r2
+push r0
+set1 0x77
+and r2 r1 r2
+addro2 0x88
+loadi r1
+lloc0 -1
+jifn get_curr_state_else
+load2 0x83
+jump get_curr_state_end
+get_curr_state_else: load2 0x82
+get_curr_state_end: lloc0 -3
+jifn make_new_state_else
+or r2 r1 r2
+jump make_new_state_end
+make_new_state_else: not r1 r1
+and r2 r1 r2
+make_new_state_end: lloc0 -1
+jifn save_state_else
+store2 0x83
+outputa r2
+jump save_state_end
+save_state_else: store2 0x82
+outputb r2
+save_state_end: ret 3
