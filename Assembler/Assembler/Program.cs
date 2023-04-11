@@ -87,7 +87,7 @@ namespace Assembler
                         byte regNum = byte.Parse(regName.Substring(1));
 
                         if (regNum > 4) throw new AssemblerException();
-                        return (opcodeByte, (byte)(regNum << 5));
+                        return (opcodeByte, (byte)(regNum << 5));   
                     }
                 case ParseType.Src:
                     {
@@ -136,22 +136,7 @@ namespace Assembler
 
         static void Main(string[] args)
         {
-            //Get code
-            string srcFolder = @"..\..\..\..\..\DemoProgram\";
-            string codePath = srcFolder + "depthFirstSearch.lasm";
-            string[] lines = File.ReadAllLines(codePath);
-            GetCodeLines(lines, out List<string> codeLines, out Dictionary<string, byte> labels);
-            Console.WriteLine(codeLines.Count());
-
-            //Generate stripped file
-            string strippedOutputFile = codePath.Substring(0, codePath.Length - 5) + "_stripped.txt";
-            List<string> strippedFileLines = new(codeLines);
-            foreach (string label in labels.Keys)
-            {
-                byte index = labels[label];
-                strippedFileLines[index] = label + ": " + strippedFileLines[index];
-            }
-            File.WriteAllLines(strippedOutputFile, strippedFileLines);
+            string srcFolder = @"..\..\..\..\..\DemoPrograms\";
 
             //Get ISA
             string isaPath = srcFolder + "isa.json";
@@ -162,7 +147,7 @@ namespace Assembler
             };
             ISA isa = JsonSerializer.Deserialize<ISA>(isaText, options);
 
-            //Generate microcode
+            //Generate ISA microcode
             (byte[] ioMicrocode, byte[] aluMicrocode) = MicrocodeGenerator.Generate(isa);
 
             string ioMicrocodeOutputFile = srcFolder + "ioMicrocodeROM.bin";
@@ -171,19 +156,36 @@ namespace Assembler
             File.WriteAllBytes(ioMicrocodeOutputFile, ioMicrocode);
             File.WriteAllBytes(aluMicrocodeOutputFile, aluMicrocode);
 
-            //Assemble
-            (byte Opcode, byte Data)[] assembled = codeLines.Select(x => AssembleLine(x, labels, isa)).ToArray();
-            byte[] opcodeBytes = new byte[256];
-            byte[] dataBytes = new byte[256];
-            Array.Fill<byte>(opcodeBytes, 0x7F);
-            assembled.Select(x => x.Opcode).ToArray().CopyTo(opcodeBytes, 0);
-            assembled.Select(x => x.Data).ToArray().CopyTo(dataBytes, 0);
+            foreach (string codePath in Directory.EnumerateFiles(srcFolder, "*.lasm"))
+            {
+                string[] lines = File.ReadAllLines(codePath);
+                GetCodeLines(lines, out List<string> codeLines, out Dictionary<string, byte> labels);
+                Console.WriteLine(codeLines.Count());
 
-            string opcodeOutputFile = codePath.Substring(0, codePath.Length - 5) + "_opcodeROM.bin";
-            string dataOutputFile = codePath.Substring(0, codePath.Length - 5) + "_dataROM.bin";
+                //Generate stripped file
+                string strippedOutputFile = codePath.Substring(0, codePath.Length - 5) + "_stripped.slasm";
+                List<string> strippedFileLines = new(codeLines);
+                foreach (string label in labels.Keys)
+                {
+                    byte index = labels[label];
+                    strippedFileLines[index] = label + ": " + strippedFileLines[index];
+                }
+                File.WriteAllLines(strippedOutputFile, strippedFileLines);
 
-            File.WriteAllBytes(opcodeOutputFile, opcodeBytes);
-            File.WriteAllBytes(dataOutputFile, dataBytes);
+                //Assemble
+                (byte Opcode, byte Data)[] assembled = codeLines.Select(x => AssembleLine(x, labels, isa)).ToArray();
+                byte[] opcodeBytes = new byte[256];
+                byte[] dataBytes = new byte[256];
+                Array.Fill<byte>(opcodeBytes, 0x7F);
+                assembled.Select(x => x.Opcode).ToArray().CopyTo(opcodeBytes, 0);
+                assembled.Select(x => x.Data).ToArray().CopyTo(dataBytes, 0);
+
+                string opcodeOutputFile = codePath.Substring(0, codePath.Length - 5) + "_opcodeROM.bin";
+                string dataOutputFile = codePath.Substring(0, codePath.Length - 5) + "_dataROM.bin";
+
+                File.WriteAllBytes(opcodeOutputFile, opcodeBytes);
+                File.WriteAllBytes(dataOutputFile, dataBytes);
+            }
         }
     }
 }
