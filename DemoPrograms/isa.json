@@ -86,8 +86,8 @@
         "none": 8,
         "jumpInst": 10,
         "ram": 11,
-        "outputa": 13,
-        "outputb": 14
+        "displayStart": 14,
+        "display": 15
     },
     "aluOperations": {
         "a+b": "0b00000",
@@ -914,6 +914,36 @@
             ]
         },
         {
+            "name": "jif0",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "r0",
+                    "write": "none",
+                    "aluOp": "!=00"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "jifn0",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "r0",
+                    "write": "none",
+                    "aluOp": "==00"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
             "name": "call",
             "parseType": "label",
             "microcode": [
@@ -1010,6 +1040,106 @@
                 {
                     "read": "rx",
                     "write": "outputb"
+                }
+            ]
+        },
+        {
+            "name": "dispi",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4"
+                },
+                {
+                    "read": "none",
+                    "write": "displayStart"
+                }
+            ]
+        },
+        {
+            "name": "disp8",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "ram",
+                    "ramAddrFromData": false,
+                    "write": "display"
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "ram",
+                    "ramAddrFromData": false,
+                    "write": "display"
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "ram",
+                    "ramAddrFromData": false,
+                    "write": "display"
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "ram",
+                    "ramAddrFromData": false,
+                    "write": "display"
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "ram",
+                    "ramAddrFromData": false,
+                    "write": "display"
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "ram",
+                    "ramAddrFromData": false,
+                    "write": "display"
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "ram",
+                    "ramAddrFromData": false,
+                    "write": "display"
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "ram",
+                    "ramAddrFromData": false,
+                    "write": "display"
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
                 }
             ]
         },
