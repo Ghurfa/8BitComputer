@@ -7,8 +7,8 @@
 .HEAD_IDX       0x84    # Head & tail indices of the circular queue. New directions are added at the head
 .TAIL_IDX       0x85
 .HEAD_DIR       0x8F
-.BODY_DIRS      0x90    # to 0x9F. Each char stores 4 crumbs. Crumb 0 is at the least significant position
-.SCREEN_STATE   0xA0    # to 0xA7. Each char stores the 8 pixels of the row. Pixel 0 is MSB of each row
+.BODY_DIRS      0x90    # to 0x9F. Each byte stores 4 direction, each one crumb. Crumb 0 is at the least significant position
+.SCREEN_STATE   0xA0    # to 0xA7. Each byte stores the 8 pixels of the row. Pixel 0 is MSB of each row
 .APPLE_X        0xB0
 .APPLE_Y        0xB1
 
@@ -34,7 +34,7 @@ store0 [SCREEN_STATE + 5]
 store0 [SCREEN_STATE + 6]
 store0 [SCREEN_STATE + 7]
 
-set0 0x10           # Non-empty line of screen
+set0 0b00110000             # Non-empty line of screen
 store0 [SCREEN_STATE + 3]
 
 set0 3              # Head/tail position
@@ -49,7 +49,7 @@ set0 1              # Head index in body direction circular queue
 store0 HEAD_IDX
 
 # Show initial screen state
-dispi
+dispi SCREEN_STATE
 disp8
 
 # Wait for player input to start. Also obtain a seed for the RNG (stored in r2)
@@ -64,81 +64,88 @@ main_loop:
 # Determine new head direction (r1)
 load1 HEAD_DIR
 input r0
-jif0 dir_change_end         # No input -- direction unchanged
+set2 0x0F
+gr r0 r2 r0
+jifn dir_change_end         # No directional input -- direction unchanged
+mov r0 r1
 
-set1 -1                     # Increment r1 until r0 is zero
+set1 4                     # Increment r1 until r0 is zero
 get_dir_loop:
-incr0 -1
-incr1 1
-jifn0 dir_change_end
+add r0 r0 r0
+incr1 -1
+jifn0 get_dir_loop
 dir_change_end:
 store1 HEAD_DIR
 
+
 # Determine new head position (r0 = x, r1 = y)
-set4 0x07               # Mask = 0000_0111
+mov r0 r1
 call dir_to_delta_xy
+set4 0x07                   # Mask = 0000_0111. Used to mod head position by screen size
 load0 HEAD_X
 add r1 r0 r1
 and r0 r1 r4
 load1 HEAD_Y
-add r2 r0 r2
+add r2 r1 r2
 and r1 r2 r4
 sloc0 -1
 sloc1 -2
 
-# Extract pixel at new head position (r0 = pixel). Simultaneously, set r1 to be 1000_0000 >> x
+# Get screen state of row containing pixel (r2 = row state)
 addro1 SCREEN_STATE
 loadi r2
-set1 0x70
+
+# Build mask used to extract pixel (i.e. set r1 to be 1000_0000 >> x)
+set1 0x80
 jump extract_cond
 extract_start:
-add r2 r2 r2
 shr r1 r1
 incr0 -1
 extract_cond:
 jifn0 extract_start
 
 # If pixel is nonempty, game over
-jifn game_over
+and r0 r1 r2
+jifn0 game_over
 
 # Color in pixel of new head position
-lloc0 -1
+lloc0 -2
 addro0 SCREEN_STATE
 loadi r2
 or r2 r2 r1
 storei r2
 
 # Move head to new position
-lloc1 -2
-store0 HEAD_X
-store1 HEAD_Y
+lloc1 -1
+store1 HEAD_X
+store0 HEAD_Y
 
 # Load block of bodyDir containing the head pointer
 load2 HEAD_DIR
 load1 HEAD_IDX
 set4 0x03
 and r0 r1 r4
-shr r1
-shr r1
+shr r1 r1
+shr r1 r1
 sloc1 -3
 addro1 BODY_DIRS
-loadi r1
+loadi r4
 
 # Add the new head direction to the block
-set4 0x03
-# Curr registers: r0 = body dir sub index, r1 = body dir block, r2 = head dir, r4 = mask
+set1 0x03
+# Curr registers: r0 = body dir sub index, r1 = mask, r2 = head dir, r4 = body dir block
 jump head_append_cond
 head_append_loop:
 add r2 r2 r2
 add r2 r2 r2
-add r4 r4 r4
-add r4 r4 r4
-incr r0 -1
+add r1 r1 r1
+add r1 r1 r1
+incr0 -1
 head_append_cond:
 jifn0 head_append_loop
-not r4 r4
-and r1 r1 r4
-or r1 r1 r2
+not r1 r1
+and r4 r1 r4
+or r1 r2 r4
 
 # Write the block back to memory
 lloc0 -3
@@ -158,11 +165,11 @@ load1 TAIL_Y
 addro1 SCREEN_STATE
 loadi r2
 
-set r1 0x70                 # Build mask
+set1 0x80                 # Build mask
 jump tail_uncolor_cond
 tail_uncolor_loop:
 shr r1 r1
-incr r0 -1
+incr0 -1
 tail_uncolor_cond:
 jifn0 tail_uncolor_loop
 
@@ -193,11 +200,14 @@ and r0 r1 r4
 
 # Compute new tail position
 call dir_to_delta_xy
+set4 0x07
 load0 TAIL_X
 add r1 r0 r1
+and r1 r1 r4
 store1 TAIL_X
 load0 TAIL_Y
 add r2 r0 r2
+and r2 r2 r4
 store2 TAIL_Y
 
 # Increment tail index
@@ -208,7 +218,7 @@ and r0 r0 r4
 store0 TAIL_IDX
 
 # Show the screen
-dispi
+dispi SCREEN_STATE
 disp8
 
 jump main_loop
@@ -258,7 +268,7 @@ jifn skip_xor
 
 do_xor:
 set1 0x1D
-xor x0 x0 x1
+xor r0 r0 r1
 
 skip_xor:
 ret 0

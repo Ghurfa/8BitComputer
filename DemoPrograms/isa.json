@@ -56,11 +56,15 @@
         "xnor": "0x5B",
         "jump": "0x60",
         "jifn": "0x61",
-        "call": "0x62",
-        "ret": "0x63",
+        "jif0": "0x62",
+        "jifn0": "0x63",
+        "call": "0x64",
+        "ret": "0x65",
         "input": "0x70",
         "outputa": "0x71",
         "outputb": "0x72",
+        "dispi": "0x73",
+        "disp8": "0x74",
         "halt": "0x7F"
     },
     "readIndices": {
@@ -86,6 +90,8 @@
         "none": 8,
         "jumpInst": 10,
         "ram": 11,
+        "outputa": 13,
+        "outputb": 14,
         "displayStart": 14,
         "display": 15
     },
@@ -178,6 +184,17 @@
                 {
                     "read": "data",
                     "write": "r3",
+                    "aluOp": "a"
+                }
+            ]
+        },
+        {
+            "name": "set4",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
                     "aluOp": "a"
                 }
             ]
@@ -1049,7 +1066,8 @@
             "microcode": [
                 {
                     "read": "data",
-                    "write": "r4"
+                    "write": "r4",
+                    "aluOp": "a"
                 },
                 {
                     "read": "none",
@@ -1059,7 +1077,7 @@
         },
         {
             "name": "disp8",
-            "parseType": "val",
+            "parseType": "none",
             "microcode": [
                 {
                     "read": "ram",
