@@ -131,7 +131,7 @@
     <a name="appearance" val="logisim_evolution"/>
     <a name="circuit" val="main"/>
     <a name="circuitnamedboxfixedsize" val="true"/>
-    <a name="simulationFrequency" val="16.0"/>
+    <a name="simulationFrequency" val="1000.0"/>
     <comp lib="0" loc="(1000,590)" name="Tunnel">
       <a name="label" val="ALU_INVERT_OUT"/>
       <a name="labelfont" val="SansSerif bold 11"/>
@@ -1141,22 +1141,23 @@
       <a name="contents">addr/data: 8 8
 a 9*10 2 10 2 4*10 2 10
 2 10 73 74 70 9 62 15
-70 62 3 7 8 63 11 6
-64 14 50 56 15 50 56 24
-25 29 1a 3 60 50 54 7
-63 61 20 28 1a 57 18 21
-10 11 16 15 6 56 54 54
-25 29 1a 3 60 4*50 7 63
-55 56 57 20 28 18 14 7
-6 56 10 14 15 29 1a 3
-60 54 7 63 55 56 15 29
-18 15 6 56 54 54 29 1a
-60 54 54 7 63 6 56 64
-14 50 11 14 50 12 14 7
-6 56 10 73 74 60 7f 3
-4 62 7 4 62 7 3 4
-62 3 65 62 50 62 61 3
-5a 65 104*7f
+70 4 48 61 1 3 50 8
+63 11 1 64 6 14 50 56
+15 50 56 24 25 29 1a 3
+60 54 7 63 56 63 20 28
+1a 57 18 21 11 10 16 15
+6 56 54 54 25 29 1a 3
+60 4*50 7 63 55 56 57 20
+28 18 14 7 6 56 10 14
+15 29 1a 3 60 54 7 63
+55 56 15 29 18 15 6 56
+54 54 29 1a 60 54 54 7
+63 6 56 64 6 14 50 56
+11 14 50 56 12 14 7 6
+56 10 73 74 60 7f 3 4
+62 7 4 62 7 3 4 62
+3 65 62 50 62 61 3 5a
+65 97*7f
 </a>
       <a name="label" val="OPCODE_ROM"/>
       <a name="labelvisible" val="true"/>
@@ -1235,24 +1236,25 @@ c 14*0 94 c 14*0 9c c 14*0
       <a name="appearance" val="logisim_evolution"/>
       <a name="contents">addr/data: 8 8
 4 8f 85 a0 a1 a2 a4 a5
-a6 a7 10 a3 3 80 81 83
+a6 a7 30 a3 3 80 81 83
 90 2 82 1 84 a0 0 0
-1 17 8f 0 21 ff ff 1
-1e 8f 7 85 80 21 c 81
-42 34 ff fe a0 40 70 33
-52 21 ff 30 84 ff a0 40
-51 2 fe 80 81 8f 84 3
-c 21 21 fd 90 80 3 4d
-52 52 29 29 ff 48 21 8c
-34 fd 90 1 84 1 f 4
-84 82 83 a0 40 70 61 21
-ff 5f 21 51 83 a0 2 85
-3 c 21 21 90 20 72 21
-21 ff 6f 3 c 85 82 21
-82 83 42 83 85 1 f 4
-85 a0 0 1a 0 0 ff 90
-ff ff 90 ff ff 0 90 1
-0 95 0 97 97 1d 1
+1 17 8f 0 f 10 24 1
+4 0 ff 21 8f 1 8c 7
+80 21 c 81 4a 34 ff fe
+a0 40 80 36 21 ff 34 a
+8b fe a0 40 51 2 ff 80
+81 8f 84 3 c 21 21 fd
+90 80 3 51 52 52 29 29
+ff 4c 21 8c 34 fd 90 1
+84 1 f 4 84 82 83 a0
+40 80 65 21 ff 63 21 51
+83 a0 2 85 3 c 21 21
+90 20 76 21 21 ff 73 3
+c 8c 7 82 21 2c 82 83
+42 54 83 85 1 f 4 85
+a0 0 1a 0 0 ff 97 ff
+ff 97 ff ff 0 97 1 0
+9c 0 9e 9e 1d 1
 </a>
       <a name="label" val="DATA_ROM"/>
       <a name="labelvisible" val="true"/>

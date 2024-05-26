@@ -1072,6 +1072,10 @@
                 {
                     "read": "none",
                     "write": "displayStart"
+                },
+                {
+                    "read": "none",
+                    "write": "display"
                 }
             ]
         },

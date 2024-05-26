@@ -34,19 +34,22 @@ store0 [SCREEN_STATE + 5]
 store0 [SCREEN_STATE + 6]
 store0 [SCREEN_STATE + 7]
 
-set0 0b00110000             # Non-empty line of screen
+set0 0b01110000             # Non-empty line of screen
 store0 [SCREEN_STATE + 3]
+
+set0 0b00001111
+store0 BODY_DIRS    # 1st and 2nd body part directions
 
 set0 3              # Head/tail position
 store0 HEAD_X
 store0 HEAD_Y
 store0 TAIL_Y
-store0 BODY_DIRS    # 1st body part direction
+
 set0 2
-store0 TAIL_X
+store0 HEAD_IDX
 
 set0 1              # Head index in body direction circular queue
-store0 HEAD_IDX
+store0 TAIL_X
 
 # Show initial screen state
 dispi SCREEN_STATE
@@ -61,25 +64,25 @@ jif0 start
 # Main game loop
 main_loop:
 
-# Determine new head direction (r1)
-load1 HEAD_DIR
-input r0
-set2 0x0F
-gr r0 r2 r0
+# Determine new head direction (r0)
+input r2
+set1 0x0F
+gr r0 r1 r2
 jifn dir_change_end         # No directional input -- direction unchanged
-mov r0 r1
+mov r0 r2
 
-set1 4                     # Increment r1 until r0 is zero
+set1 3                     # Increment r1 until MSB of r0 is 1
+jump get_dir_cond
 get_dir_loop:
 add r0 r0 r0
 incr1 -1
-jifn0 get_dir_loop
-dir_change_end:
+get_dir_cond:
+jifn get_dir_loop
 store1 HEAD_DIR
-
+dir_change_end:
 
 # Determine new head position (r0 = x, r1 = y)
-mov r0 r1
+load0 HEAD_DIR
 call dir_to_delta_xy
 set4 0x07                   # Mask = 0000_0111. Used to mod head position by screen size
 load0 HEAD_X
@@ -240,7 +243,7 @@ set2 -1
 
 jif0 dir_to_delta_xy_end
 incr0 -1                    # dir 1 = down
-set2 -1
+set2 1
 
 jif0 dir_to_delta_xy_end
 incr0 -1                    # dir 2 = left
