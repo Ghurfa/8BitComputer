@@ -17,9 +17,12 @@
 # [r3 - 1] = headX
 # [r3 - 2] = headY
 # [r3 - 3] = headIdx >> 2
-# [r3 - 4] = tailIdx >> 2
+# [r3 - 4] = random
+# [r3 - 5] = newAppleX
+# [r3 - 6] = newAppleY
+# [r3 - 7] = ateApple
 
-incr3 4
+incr3 7
 
 # Initialize snake and screen
 
@@ -30,12 +33,13 @@ store0 SCREEN_STATE         # Empty lines of screen
 store0 [SCREEN_STATE + 1]
 store0 [SCREEN_STATE + 2]
 store0 [SCREEN_STATE + 4]
-store0 [SCREEN_STATE + 5]
 store0 [SCREEN_STATE + 6]
 store0 [SCREEN_STATE + 7]
 
-set0 0b01110000             # Non-empty line of screen
+set0 0b01110000             # Non-empty lines of screen
 store0 [SCREEN_STATE + 3]
+set0 0b00000010
+store0 [SCREEN_STATE + 5]
 
 set0 0b00001111
 store0 BODY_DIRS    # 1st and 2nd body part directions
@@ -48,8 +52,13 @@ store0 TAIL_Y
 set0 2
 store0 HEAD_IDX
 
-set0 1              # Head index in body direction circular queue
+set0 1
 store0 TAIL_X
+
+set0 6
+store0 APPLE_X
+set0 5
+store0 APPLE_Y
 
 # Show initial screen state
 dispi SCREEN_STATE
@@ -60,6 +69,7 @@ start:
 input r0
 incr2 1
 jif0 start
+sloc1 -4
 
 # Main game loop
 main_loop:
@@ -81,7 +91,7 @@ jifn get_dir_loop
 store1 HEAD_DIR
 dir_change_end:
 
-# Determine new head position (r0 = x, r1 = y)
+# Determine new head position & store on stack. (r0 = x, r1 = y)
 load0 HEAD_DIR
 call dir_to_delta_xy
 set4 0x07                   # Mask = 0000_0111. Used to mod head position by screen size
@@ -94,21 +104,53 @@ and r1 r2 r4
 sloc0 -1
 sloc1 -2
 
-# Get screen state of row containing pixel (r2 = row state)
-addro1 SCREEN_STATE
-loadi r2
+# Check if apple was eaten
+load2 APPLE_X
+eq r0 r0 r2
+load2 APPLE_Y
+eq r1 r1 r2
+and r0 r1 r0
+sloc0 -7
+jifn did_not_eat_apple
 
-# Build mask used to extract pixel (i.e. set r1 to be 1000_0000 >> x)
-set1 0x80
-jump extract_cond
-extract_start:
-shr r1 r1
-incr0 -1
-extract_cond:
-jifn0 extract_start
+# If apple was eaten, generate new apple position
+gen_apple_pos_loop:
+lloc0 -4                # Get new random state
+call gen_random
+sloc0 -4
+
+set2 0x07               # Mask
+and r1 r0 r2            # Get position based on random state
+sloc1 -6
+shr r0 r0
+shr r0 r0
+shr r0 r0
+and r0 r0 r2
+sloc0 -5
+
+call get_pixel          # If pixel at new apple is already filled, regenerate
+jifn0 gen_apple_pos_loop
+
+lloc0 -5                # Set apple position
+store0 APPLE_X
+lloc0 -6
+store0 APPLE_Y
+
+addro0 SCREEN_STATE     # Color in pixel of new apple position
+loadi r2
+or r2 r2 r1
+storei r2
+
+jump move_head
+
+did_not_eat_apple:
+
+# Get state of pixel at new head position
+lloc1 -2
+lloc0 -1
+call get_pixel
 
 # If pixel is nonempty, game over
-and r0 r1 r2
 jifn0 game_over
 
 # Color in pixel of new head position
@@ -118,7 +160,10 @@ loadi r2
 or r2 r2 r1
 storei r2
 
-# Move head to new position
+move_head:
+
+# Move head to new position. Do this after checking lose condition in the interest of a cleaner game over animation
+lloc0 -2
 lloc1 -1
 store1 HEAD_X
 store0 HEAD_Y
@@ -161,6 +206,10 @@ incr0 1
 set4 0x0F
 and r0 r0 r4
 store0 HEAD_IDX
+
+# If an apple was eaten, do not move the tail
+lloc0 -7
+jifn0 main_loop_end
 
 # Uncolor pixel containing the tail
 load0 TAIL_X
@@ -220,7 +269,9 @@ set4 0x0F
 and r0 r0 r4
 store0 TAIL_IDX
 
+
 # Show the screen
+main_loop_end:
 dispi SCREEN_STATE
 disp8
 
@@ -256,13 +307,35 @@ set1 1                      # dir 3 = right
 dir_to_delta_xy_end:
 ret 0
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Gets the state of a pixel on the screen. Returns nonzero if the pixel is on and zero if the pixel is off. Also
+# returns the mask used to extract the pixel
+#
+# (char state, char mask) get_pixel(char x, char y)
+
+get_pixel:
+# Get screen state of row containing pixel (r2 = row state)
+addro1 SCREEN_STATE                 
+loadi r2
+
+# Build mask used to extract pixel (i.e. set r1 to be 1000_0000 >> x)
+set1 0x80
+jump extract_cond
+extract_start:
+shr r1 r1
+incr0 -1
+extract_cond:
+jifn0 extract_start
+
+and r0 r1 r2
+ret 0
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Linear-feedback shift register PRNG. Based on https://www.codebase64.org/doku.php?id=base:small_fast_8-bit_prng
 #
-# char random(char state)
+# char gen_random(char state)
 
-random:
+gen_random:
 jif0 do_xor         # Special case: 0x00 maps to 0x1D
 
 add r0 r0 r0
