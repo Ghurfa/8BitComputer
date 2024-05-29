@@ -81,13 +81,20 @@ gr r0 r1 r2
 jifn dir_change_end         # No directional input -- direction unchanged
 mov r0 r2
 
-set1 3                     # Increment r1 until MSB of r0 is 1
+set1 3                      # Increment r1 until MSB of r0 is 1
 jump get_dir_cond
 get_dir_loop:
 add r0 r0 r0
 incr1 -1
 get_dir_cond:
 jifn get_dir_loop
+
+load0 HEAD_DIR              # Ensure new direction is not directly opposite current direction
+add r0 r0 r1
+incr0 -1
+set2 0x03
+and r0 r0 r2
+jif0 dir_change_end
 store1 HEAD_DIR
 dir_change_end:
 
@@ -279,8 +286,6 @@ jump main_loop
 
 game_over:
 halt    # TODO: game over animation
-
-
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Converts a 2-bit direction (r0) to delta X (r1) and delta Y (r2) values

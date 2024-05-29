@@ -168,7 +168,6 @@ namespace Assembler
             }
         }
 
-
         static void Main(string[] args)
         {
             string srcFolder = @"..\..\..\..\..\DemoPrograms\";
