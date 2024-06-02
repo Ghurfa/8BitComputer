@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Assembler
@@ -50,7 +51,7 @@ namespace Assembler
             }
             else
             {
-                return (byte)Convert.ToSByte(literal);
+                return (byte)Convert.ToInt16(literal);
             }
         }
 
@@ -167,6 +168,14 @@ namespace Assembler
                     throw new AssemblerException();
             }
         }
+        
+        static int LogicalToPhysicalSlot(int slot)
+        {
+            // Bits 2 and 3 are swapped in the physical design of the computer for easier wiring
+            int bit2 = (slot & 0b00000100) >> 2;
+            int bit3 = (slot & 0b00001000) >> 3;
+            return (slot & 0b00000011) | (bit2 << 3) | (bit3 << 2);
+        }
 
         static void Main(string[] args)
         {
@@ -181,24 +190,32 @@ namespace Assembler
             };
             ISA isa = JsonSerializer.Deserialize<ISA>(isaText, options);
 
-            //Generate ISA microcode
+            //Generate ISA microcode and write to files
             (byte[] ioMicrocode, byte[] aluMicrocode) = MicrocodeGenerator.Generate(isa);
-
+            
             string ioMicrocodeOutputFile = srcFolder + "ioMicrocodeROM.bin";
             string aluMicrocodeOutputFile = srcFolder + "aluMicrocodeROM.bin";
-
+            
             File.WriteAllBytes(ioMicrocodeOutputFile, ioMicrocode);
             File.WriteAllBytes(aluMicrocodeOutputFile, aluMicrocode);
 
+            // Assemble programs
+            StringBuilder output = new();
+
+            byte[] opcodeROMImage = new byte[256 * 16];
+            byte[] dataROMImage = new byte[256 * 16];
+            Array.Fill<byte>(opcodeROMImage, 0x7F); // Fill with HALT
+            int logicalSlot = 0;
             foreach (string codePath in Directory.EnumerateFiles(srcFolder, "*.lasm"))
             {
+                if (logicalSlot >= 16) throw new AssemblerException("Too many programs");
+
                 string[] lines = File.ReadAllLines(codePath);
                 GetCodeLines(lines, out List<string> codeLines, 
                                     out Dictionary<string, byte> labels, 
                                     out Dictionary<string, byte> namedConstants);
                 
                 string fileName = Path.GetFileName(codePath);
-                Console.WriteLine(fileName + " has " + codeLines.Count() + " instructions");
 
                 //Generate stripped file
                 string strippedOutputFile = codePath.Substring(0, codePath.Length - 5) + "_stripped.slasm";
@@ -212,18 +229,21 @@ namespace Assembler
 
                 //Assemble
                 (byte Opcode, byte Data)[] assembled = codeLines.Select(x => AssembleLine(x, labels, namedConstants, isa)).ToArray();
-                byte[] opcodeBytes = new byte[256];
-                byte[] dataBytes = new byte[256];
-                Array.Fill<byte>(opcodeBytes, 0x7F);
-                assembled.Select(x => x.Opcode).ToArray().CopyTo(opcodeBytes, 0);
-                assembled.Select(x => x.Data).ToArray().CopyTo(dataBytes, 0);
+                int physicalSlot = LogicalToPhysicalSlot(logicalSlot);
+                assembled.Select(x => x.Opcode).ToArray().CopyTo(opcodeROMImage, 256 * physicalSlot);
+                assembled.Select(x => x.Data).ToArray().CopyTo(dataROMImage, 256 * physicalSlot);
+                
+                string outputLine = $"Slot {logicalSlot}: {fileName} ({codeLines.Count()} instructions)";
+                Console.WriteLine(outputLine);
+                output.AppendLine(outputLine);
 
-                string opcodeOutputFile = codePath.Substring(0, codePath.Length - 5) + "_opcodeROM.bin";
-                string dataOutputFile = codePath.Substring(0, codePath.Length - 5) + "_dataROM.bin";
-
-                File.WriteAllBytes(opcodeOutputFile, opcodeBytes);
-                File.WriteAllBytes(dataOutputFile, dataBytes);
+                logicalSlot++;
             }
+
+            // Write programs to files
+            File.WriteAllBytes(srcFolder + "opcodeROM.bin", opcodeROMImage);
+            File.WriteAllBytes(srcFolder + "dataROM.bin", dataROMImage);
+            File.WriteAllText(srcFolder + "assemblerOutput.txt", output.ToString());
         }
     }
 }

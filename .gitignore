@@ -400,3 +400,4 @@ FodyWeavers.xsd
 # Assembler output files
 *.bin
 *.slasm
+**/assemblerOutput.txt

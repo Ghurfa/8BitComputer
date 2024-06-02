@@ -8,5 +8,10 @@ namespace Assembler
 {
     internal class AssemblerException : InvalidOperationException
     {
+        public AssemblerException() { }
+
+        public AssemblerException(string message) : base(message)
+        {
+        }
     }
 }

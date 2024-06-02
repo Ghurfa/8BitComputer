@@ -1,0 +1,25 @@
+set0 0b10000000
+store0 0x00
+set0 0b11000000
+store0 0x01
+set0 0b11100000
+store0 0x02
+set0 0b11110000
+store0 0x03
+set0 0b11111000
+store0 0x04
+set0 0b11111100
+store0 0x05
+set0 0b11111110
+store0 0x06
+set0 0b11111111
+store0 0x07
+
+set3 255
+loop:
+set2 0
+inner_loop:
+nop
+dispi 0x00
+disp8
+jump loop
