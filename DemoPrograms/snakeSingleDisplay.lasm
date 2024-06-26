@@ -78,20 +78,9 @@ sloc1 -4
 main_loop:
 
 # Show screen and get input (r2) at the same time
-set0 0
-set1 3
-set2 0
-
-display_loop:
 dispi SCREEN_STATE
 disp8
-incr0 1
-jifn0 display_loop
-incr1 -1
-mov r0 r1
-input r4
-or r2 r2 r4
-jifn0 display_loop
+input r2
 
 # Determine new head direction (r0)
 add r2 r2 r2                # Left-shift four times since we use the four MSB but
