@@ -234,7 +234,7 @@ storei r1
 # Increment head index
 load0 HEAD_IDX
 incr0 1
-set4 0x0F
+set4 0x3F
 and r0 r0 r4
 store0 HEAD_IDX
 
@@ -295,14 +295,31 @@ store2 TAIL_Y
 # Increment tail index
 load0 TAIL_IDX
 incr0 1
-set4 0x0F
+set4 0x3F
 and r0 r0 r4
 store0 TAIL_IDX
 
 jump main_loop
 
 game_over:
-halt    # TODO: game over animation
+
+# Uncolor the apple
+
+load0 APPLE_X
+load1 APPLE_Y
+call get_pixel          # Get the mask appropriate to remove the apple (r1)
+load0 APPLE_Y
+addro0 SCREEN_STATE
+loadi r0
+or r0 r0 r1
+storei r0
+
+# TODO: Flash the screen to show game over
+
+end_display_loop:
+dispi SCREEN_STATE
+disp8
+jump end_display_loop
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Converts a 2-bit direction (r0) to delta X (r1) and delta Y (r2) values
