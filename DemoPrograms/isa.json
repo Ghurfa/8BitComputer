@@ -22,6 +22,7 @@
         "storei": "0x18",
         "storeiv": "0x19",
         "loadi": "0x1A",
+        "store8x": "0x1B",
         "lloc0": "0x20",
         "lloc1": "0x21",
         "lloc2": "0x22",
@@ -47,13 +48,15 @@
         "sub": "0x51",
         "sub2": "0x52",
         "shr": "0x54",
-        "not": "0x55",
-        "and": "0x56",
-        "or": "0x57",
-        "nand": "0x58",
-        "nor": "0x59",
-        "xor": "0x5A",
-        "xnor": "0x5B",
+        "shr2": "0x55",
+        "shr3": "0x56",
+        "not": "0x57",
+        "and": "0x58",
+        "or": "0x59",
+        "nand": "0x5A",
+        "nor": "0x5B",
+        "xor": "0x5C",
+        "xnor": "0x5D",
         "jump": "0x60",
         "jifn": "0x61",
         "jif0": "0x62",
@@ -450,6 +453,92 @@
             ]
         },
         {
+            "name": "store8x",
+            "parseType": "src",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                },
+                {
+                    "read": "rx",
+                    "write": "ram",
+                    "ramAddrFromData": false
+                },
+                {
+                    "read": "r4",
+                    "write": "r4",
+                    "aluOp": "a+1"
+                }
+            ]
+        },
+        {
             "name": "lloc0",
             "parseType": "val",
             "microcode": [
@@ -806,9 +895,58 @@
             ]
         },
         {
+            "name": "sub",
+            "parseType": "destSrcSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "r4B": false,
+                    "aluOp": "a-b"
+                }
+            ]
+        },
+        {
             "name": "shr",
             "parseType": "destSrc",
             "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": ">>"
+                }
+            ]
+        },
+        {
+            "name": "shr2",
+            "parseType": "destSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": ">>"
+                },
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": ">>"
+                }
+            ]
+        },
+        {
+            "name": "shr3",
+            "parseType": "destSrc",
+            "microcode": [
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": ">>"
+                },
+                {
+                    "read": "rx",
+                    "write": "rx",
+                    "aluOp": ">>"
+                },
                 {
                     "read": "rx",
                     "write": "rx",

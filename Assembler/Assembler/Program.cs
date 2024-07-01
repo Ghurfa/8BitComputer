@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -8,7 +9,7 @@ namespace Assembler
     {
         static bool isLabel(string line, out string? label)
         {
-            string pattern = @"^[a-zA-Z_]+:$";
+            string pattern = @"^[a-zA-Z][a-zA-Z0-9_]*:$";
             Regex regex = new Regex(pattern);
             Match match = regex.Match(line);
             if (match.Success)

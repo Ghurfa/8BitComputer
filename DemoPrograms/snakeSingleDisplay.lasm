@@ -24,21 +24,29 @@
 
 incr3 7
 
-# Initialize snake and screen
+game_restart:
 
+# Clear the screen
+set0 0xFF
+set4 SCREEN_STATE
+store8x r0
+
+# Animate drawing the snake in the starting position
+set0 0b10111111
+store0 [SCREEN_STATE + 3]
+call disp_256
+set0 0b10011111
+store0 [SCREEN_STATE + 3]
+call disp_256
+set0 0b10001111
+store0 [SCREEN_STATE + 3]
+call disp_256
+
+# Initialize all variables
+set0 0
 store0 TAIL_IDX
 
-set0 0xFF
-store0 SCREEN_STATE         # Empty lines of screen
-store0 [SCREEN_STATE + 1]
-store0 [SCREEN_STATE + 2]
-store0 [SCREEN_STATE + 4]
-store0 [SCREEN_STATE + 6]
-store0 [SCREEN_STATE + 7]
-
-set0 0b10001111             # Non-empty lines of screen
-store0 [SCREEN_STATE + 3]
-set0 0b11111101
+set0 0b11111101             # Apple pixel
 store0 [SCREEN_STATE + 5]
 
 set0 0b00001111
@@ -61,10 +69,6 @@ store0 APPLE_X
 set0 5
 store0 APPLE_Y
 
-# Show initial screen state
-dispi SCREEN_STATE
-disp8
-
 # Wait for player input to start. Also obtain a seed for the RNG
 start:
 input r0
@@ -78,9 +82,16 @@ sloc1 -4
 main_loop:
 
 # Show screen and get input (r2) at the same time
-dispi SCREEN_STATE
-disp8
-input r2
+set1 3
+set2 0
+
+display_loop:
+call disp_256
+incr1 -1
+mov r0 r1
+input r4
+or r2 r2 r4
+jifn0 display_loop
 
 # Determine new head direction (r0)
 add r2 r2 r2                # Left-shift four times since we use the four MSB but
@@ -140,9 +151,7 @@ sloc0 -4
 set2 0x07               # Mask
 and r1 r0 r2            # Get position based on random state
 sloc1 -6
-shr r0 r0
-shr r0 r0
-shr r0 r0
+shr3 r0 r0
 and r0 r0 r2
 sloc0 -5
 
@@ -193,8 +202,7 @@ load2 HEAD_DIR
 load1 HEAD_IDX
 set4 0x03
 and r0 r1 r4
-shr r1 r1
-shr r1 r1
+shr2 r1 r1
 sloc1 -3
 addro1 BODY_DIRS
 loadi r4
@@ -231,63 +239,7 @@ store0 HEAD_IDX
 lloc0 -7
 jifn0 main_loop
 
-# Uncolor pixel containing the tail
-load0 TAIL_X
-load1 TAIL_Y
-addro1 SCREEN_STATE
-loadi r2
-
-set1 0x80                 # Build mask
-jump tail_uncolor_cond
-tail_uncolor_loop:
-shr r1 r1
-incr0 -1
-tail_uncolor_cond:
-jifn0 tail_uncolor_loop
-
-or r2 r2 r1
-load1 TAIL_Y
-addro1 SCREEN_STATE
-storei r2
-
-# Get the direction of the last item in the body directions queue
-load1 TAIL_IDX          # Load block containing the direction
-set4 0x03
-and r0 r1 r4
-shr r1 r1
-shr r1 r1
-addro1 BODY_DIRS
-loadi r1
-
-jump move_tail_cond     # Extract direction
-move_tail_loop:
-shr r1 r1
-shr r1 r1
-incr0 -1
-move_tail_cond:
-jifn0 move_tail_loop
-set4 0x03
-and r0 r1 r4
-
-# Compute new tail position
-call dir_to_delta_xy
-set4 0x07
-load0 TAIL_X
-add r1 r0 r1
-and r1 r1 r4
-store1 TAIL_X
-load0 TAIL_Y
-add r2 r0 r2
-and r2 r2 r4
-store2 TAIL_Y
-
-# Increment tail index
-load0 TAIL_IDX
-incr0 1
-set4 0x3F
-and r0 r0 r4
-store0 TAIL_IDX
-
+call move_tail
 jump main_loop
 
 game_over:
@@ -296,19 +248,54 @@ game_over:
 
 load0 APPLE_X
 load1 APPLE_Y
-call get_pixel          # Get the mask appropriate to remove the apple (r1)
-load0 APPLE_Y
-addro0 SCREEN_STATE
-loadi r0
-or r0 r0 r1
-storei r0
+call uncolor_pixel
 
-# TODO: Flash the screen to show game over
+# Flash the screen four times to show game over
 
+set2 4
 end_display_loop:
+set0 0
+
+set1 8
+show_loop:
+call disp_256
+incr1 -1
+mov r0 r1
+jifn0 show_loop
+
+set1 25
+hide_loop:               # Hide phase
+nop
+incr1 -1
+mov r0 r1
+jifn0 hide_loop
+
+incr2 -1                # Loop
+mov r0 r2
+jifn0 end_display_loop
+
+# Shrink the snake starting from the tail
+
+shrink_tail_loop:
+call move_tail
+sloc0 -8
+call disp_256
+call disp_256
+call disp_256
+lloc0 -8
+jifn0 shrink_tail_loop
+
+jump game_restart
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Shows the display 256 times
+#
+# void disp256()
+
+disp_256:
 dispi SCREEN_STATE
 disp8
-jump end_display_loop
+ret 0
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Converts a 2-bit direction (r0) to delta X (r1) and delta Y (r2) values
@@ -356,6 +343,77 @@ extract_cond:
 jifn0 extract_start
 
 and r0 r1 r2
+ret 0
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Uncolors a pixel on screen
+#
+# void uncolor_pixel(char x, char y)
+# [r3 - 1] = pixelY
+
+uncolor_pixel:
+incr3 1
+sloc1 -1
+call get_pixel          # Get the mask appropriate to remove the pixel (r1)
+lloc0 -1
+addro0 SCREEN_STATE
+loadi r0
+or r0 r0 r1
+storei r0
+ret 1
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Uncolors the tail pixel on screen and updates the tail position. Returns 0 if tail already equals head
+#
+# char move_tail()
+
+move_tail:
+load0 TAIL_X
+load1 TAIL_Y
+call uncolor_pixel
+
+# Get the direction of the last item in the body directions queue
+load1 TAIL_IDX          # Check that tail does not equal head
+load0 HEAD_IDX          
+sub r0 r0 r1
+jif0 move_tail_end
+
+set4 0x03               # Load block containing the direction
+and r0 r1 r4
+shr2 r1 r1
+addro1 BODY_DIRS
+loadi r1
+
+jump move_tail_cond     # Extract direction
+move_tail_loop:
+shr2 r1 r1
+incr0 -1
+move_tail_cond:
+jifn0 move_tail_loop
+set4 0x03
+and r0 r1 r4
+
+# Compute new tail position
+call dir_to_delta_xy
+set4 0x07
+load0 TAIL_X
+add r1 r0 r1
+and r1 r1 r4
+store1 TAIL_X
+load0 TAIL_Y
+add r2 r0 r2
+and r2 r2 r4
+store2 TAIL_Y
+
+# Increment tail index
+load0 TAIL_IDX
+incr0 1
+set4 0x3F
+and r0 r0 r4
+store0 TAIL_IDX
+
+set0 1
+move_tail_end:
 ret 0
 
 # ---------------------------------------------------------------------------------------------------------------------
