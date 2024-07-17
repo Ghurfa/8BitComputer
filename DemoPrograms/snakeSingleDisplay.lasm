@@ -14,7 +14,7 @@
 
 # ---------------------------------------------------------------------------------------------------------------------
 # void main()
-# [r3 - 1] = headX
+# [r3 - 1] = oldHeadDir/headX
 # [r3 - 2] = headY
 # [r3 - 3] = headIdx >> 2
 # [r3 - 4] = random
@@ -71,54 +71,53 @@ store0 APPLE_Y
 
 # Wait for player input to start. Also obtain a seed for the RNG
 start:
-input r0
+ji.st ready
 incr1 1
 dispi SCREEN_STATE
 disp8
-jif0 start
+jump start
+
+ready:
 sloc1 -4
 
 # Main game loop
 main_loop:
 
-# Show screen and get input (r2) at the same time
-set1 3
-set2 0
+# Show screen and get new head direction at the same time
+set1 6
+load0 HEAD_DIR              # Save old head direction
+sloc0 -1
 
 display_loop:
-call disp_256
+call disp_128
 incr1 -1
-mov r0 r1
-input r4
-or r2 r2 r4
-jifn0 display_loop
 
-# Determine new head direction (r0)
-add r2 r2 r2                # Left-shift four times since we use the four MSB but
-add r2 r2 r2                # the computer is set up to input on the four LSB
-add r2 r2 r2
-add r2 r2 r2
-set1 0x0F
-gr r0 r1 r2
-jifn dir_change_end         # No directional input -- direction unchanged
-mov r0 r2
+set2 0x00                   # Check each directional button and get the appropriate 2-bit direction (r0)
+ji.up up_pressed
+ji.dn down_pressed
+ji.lf left_pressed
+ji.rt right_pressed
+jump dir_change_end         # No directional input -- direction unchanged
 
-set1 3                      # Get 2-bit direction (Increment r1 until MSB of r0 is 1)
-jump get_dir_cond
-get_dir_loop:
-add r0 r0 r0
-incr1 -1
-get_dir_cond:
-jifn get_dir_loop
+right_pressed:
+incr2 1
+left_pressed:
+incr2 1
+down_pressed:
+incr2 1
+up_pressed:
 
-load0 HEAD_DIR              # Ensure new direction is not directly opposite current direction
-add r0 r0 r1
-incr0 -1
-set2 0x03
-and r0 r0 r2
+lloc0 -1                    # Ensure new direction is not directly opposite current direction. If it's valid, save it a local var
+add r4 r2 r0
+incr4 -1
+set0 0x03
+and r0 r0 r4
 jif0 dir_change_end
-store1 HEAD_DIR
+store2 HEAD_DIR
+
 dir_change_end:
+mov r0 r1
+jifn0 display_loop
 
 # Determine new head position & store on stack. (r0 = x, r1 = y)
 load0 HEAD_DIR
@@ -252,23 +251,26 @@ call uncolor_pixel
 
 # Flash the screen four times to show game over
 
-set2 4
+set2 3
 end_display_loop:
 set0 0
 
-set1 8
+set1 1
+hide_loop:               # Hide phase
+nop
+incr0 1
+jifn0 hide_loop
+incr1 -1
+mov r0 r1
+jifn0 hide_loop
+
+
+set1 8                  # Show phase
 show_loop:
 call disp_256
 incr1 -1
 mov r0 r1
 jifn0 show_loop
-
-set1 25
-hide_loop:               # Hide phase
-nop
-incr1 -1
-mov r0 r1
-jifn0 hide_loop
 
 incr2 -1                # Loop
 mov r0 r2
@@ -281,14 +283,20 @@ call move_tail
 sloc0 -8
 call disp_256
 call disp_256
-call disp_256
 lloc0 -8
 jifn0 shrink_tail_loop
 
 jump game_restart
 
 # ---------------------------------------------------------------------------------------------------------------------
-# Shows the display 256 times
+# Shows the display once. Falls through to disp256
+#
+# void disp128()
+
+disp_128:
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Shows the display once
 #
 # void disp256()
 

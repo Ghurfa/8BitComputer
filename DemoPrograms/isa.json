@@ -11,6 +11,7 @@
         "incr1": "0x08",
         "incr2": "0x09",
         "incr3": "0x0A",
+        "incr4": "0x0B",
         "store0": "0x10",
         "store1": "0x11",
         "store2": "0x12",
@@ -63,6 +64,14 @@
         "jifn0": "0x63",
         "call": "0x64",
         "ret": "0x65",
+        "ji.a": "0x68",
+        "ji.b": "0x69",
+        "ji.se": "0x6a",
+        "ji.st": "0x6b",
+        "ji.up": "0x6c",
+        "ji.dn": "0x6d",
+        "ji.lf": "0x6e",
+        "ji.rt": "0x6f",
         "input": "0x70",
         "outputa": "0x71",
         "outputb": "0x72",
@@ -93,6 +102,7 @@
         "none": 8,
         "jumpInst": 10,
         "ram": 11,
+        "gamepadLatch": 12,
         "outputa": 13,
         "outputb": 14,
         "displayStart": 14,
@@ -319,6 +329,18 @@
                     "write": "r3",
                     "r4B": true,
                     "aluOp": "a-b"
+                }
+            ]
+        },
+        {
+            "name": "incr4",
+            "parseType": "val",
+            "microcode": [
+                {
+                    "read": "data",
+                    "write": "r4",
+                    "r4B": true,
+                    "aluOp": "a+b"
                 }
             ]
         },
@@ -1164,6 +1186,270 @@
                     "read": "ram",
                     "write": "jumpInst",
                     "ramAddrFromData": false
+                }
+            ]
+        },
+        {
+            "name": "ji.a",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "none",
+                    "write": "gamepadLatch"
+                },
+                {
+                    "read": "user",
+                    "write": "none",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "ji.b",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "none",
+                    "write": "gamepadLatch"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "user",
+                    "write": "none",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "ji.se",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "none",
+                    "write": "gamepadLatch"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "user",
+                    "write": "none",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "ji.st",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "none",
+                    "write": "gamepadLatch"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "user",
+                    "write": "none",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "ji.up",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "none",
+                    "write": "gamepadLatch"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "user",
+                    "write": "none",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "ji.dn",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "none",
+                    "write": "gamepadLatch"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "user",
+                    "write": "none",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "ji.lf",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "none",
+                    "write": "gamepadLatch"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "user",
+                    "write": "none",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
+                }
+            ]
+        },
+        {
+            "name": "ji.rt",
+            "parseType": "label",
+            "microcode": [
+                {
+                    "read": "none",
+                    "write": "gamepadLatch"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "none",
+                    "write": "none"
+                },
+                {
+                    "read": "user",
+                    "write": "none",
+                    "aluOp": "a"
+                },
+                {
+                    "read": "data",
+                    "write": "jumpInst"
                 }
             ]
         },
